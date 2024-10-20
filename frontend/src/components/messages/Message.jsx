@@ -1,17 +1,30 @@
+import { useAuthContext } from "../../context/AuthContext"
+import { extractTime } from "../../utils/extractTime";
+import useConversation from "../../zustand/useConversation";
 
-const Message = () => {
+const Message = ({ message }) => {
+  const { authUser } = useAuthContext();
+  const { selectedConversation } = useConversation();
+  const fromMe = message.senderId === authUser._id;
+  const formattedTime = extractTime(message.createdAt);
+  const chatClassName = fromMe ? 'chat-end' : 'chat-start';
+  const profilePic = fromMe ? authUser.profilepic : selectedConversation.profilepic;
+  const bubbleBgColor = fromMe ? 'bg-blue-500' : "";
+
   return (
-    <div className="chat chat-end">
-        <div className="chat-image avatar">
-            <div className="w-10 rounded-full">
-                <img src="https://cdn0.iconfinder.com/data/icons/communication-line-10/24/account_profile_user_contact_person_avatar_placeholder-512.png" 
-                alt="Tailwind CSS Chat" />
-            </div>
+    <div className={`chat ${chatClassName}`}>
+      <div className="chat-image avatar">
+        <div className="w-10 rounded-full">
+          <img
+            alt="Tailwind CSS Chat"
+            src={profilePic}
+          />
         </div>
-        <div className={`chat-bubble text-black bg-yellow-200`}>
-            Hii Babyyyyyyy!!
-        </div>
-        <div className="chat-footer opacity-50 text-white flex gap-1 items-center">12:32</div>
+      </div>
+      <div className={`chat-bubble text-white ${bubbleBgColor} pb-2`}>
+        {message.message}
+      </div>
+      <div className="chat-footer opacity-50 text-white flex gap-1 items-center">{formattedTime}</div>
     </div>
   )
 }
